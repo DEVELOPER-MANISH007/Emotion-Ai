@@ -1,7 +1,7 @@
 import { EMOTION_LABELS, type Emotion, type Prediction } from "../types/emotion";
 
 export const API_BASE_URL = (
-  import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:5000"
+  import.meta.env.VITE_API_BASE_URL ?? ""
 ).replace(/\/+$/, "");
 
 export class ApiError extends Error {

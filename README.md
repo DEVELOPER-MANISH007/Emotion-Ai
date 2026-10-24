@@ -40,7 +40,7 @@ python -m pip install -r backend\requirements.txt
 Start Flask in terminal 1:
 
 ```powershell
-python main.py
+python -m flask --app backend.app run --host 127.0.0.1 --port 5000
 ```
 
 Debug mode is off by default. If you explicitly want Flask's local debug reloader, set `FLASK_DEBUG=1` in that terminal before starting the server. The API listens at `http://127.0.0.1:5000`.
@@ -62,7 +62,7 @@ npm install
 npm run dev
 ```
 
-Open the local URL printed by Vite (normally <http://localhost:5173>). Set `VITE_API_BASE_URL` in `frontend\.env` if the backend uses a different URL; restart Vite after changing environment variables. For a different frontend origin, set `FRONTEND_ORIGIN` in the backend terminal to that exact origin. Flask-CORS allows only the configured origin.
+Open the local URL printed by Vite (normally <http://localhost:5173>). Leave `VITE_API_BASE_URL` blank to use Vite's `/api` proxy to Flask. Set it in `frontend\.env` only if the API is hosted at a different origin; restart Vite after changing environment variables. For a different frontend origin, set `FRONTEND_ORIGIN` in the backend terminal to that exact origin. Flask-CORS allows only the configured origin.
 
 ## API examples
 
@@ -101,8 +101,23 @@ npm test
 npm run build
 ```
 
-The API tests cover input validation, class order, single-call inference, padding, probability bounds/sum, and unavailable/invalid model responses. Frontend tests cover API readiness, empty input, successful six-class results, session history, clear/example controls, and backend failure with text preservation.
+The API tests cover input validation, request size, class order, single-call inference, padding, probability bounds/sum, and unavailable/invalid model responses. Frontend tests cover API readiness, empty input, successful six-class results, session history, clear/example controls, and backend failure with text preservation.
+
+## Deploy to Vercel
+
+The root `vercel.json` builds the Vite frontend into `public/` and exposes the existing Flask app from `app.py`. The frontend uses same-origin `/api` requests, so no production API URL or CORS setting is needed. Python dependencies are pinned in `backend\requirements.txt`; the deployment runs Python 3.12 and includes the saved model and tokenizer.
+
+After linking the repository to a Vercel project, deploy from the repository root:
+
+```powershell
+npm install --global vercel
+vercel login
+vercel link
+vercel --prod
+```
+
+Vercel's Python function bundle limit is 500 MB on the standard path. TensorFlow may need the Large Functions allowance; new projects are automatically enrolled in the current beta, while existing projects can set `VERCEL_SUPPORT_LARGE_FUNCTIONS=1` in project environment variables. The model file is about 41.5 MB. Verify `/api/health` and a real `/api/predict` call after deployment.
 
 ## Privacy and behavior
 
-Recent analyses remain in React memory for the current page session only and are not written to local storage. The API sends input to the local Flask service and does not persist it. Model confidence is a score, not a guarantee that the classification is correct.
+Recent analyses remain in React memory for the current page session only and are not written to local storage. The API sends input to the configured Flask service and does not persist it. Model confidence is a score, not a guarantee that the classification is correct.

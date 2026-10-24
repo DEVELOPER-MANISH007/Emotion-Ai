@@ -18,6 +18,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 BASE_DIR = Path(__file__).resolve().parent.parent
 ARTIFACTS_DIR = BASE_DIR / "Artifacts"
 MAX_TEXT_LENGTH = 2_000
+MAX_REQUEST_BYTES = 16 * 1024
 MAX_SEQUENCE_LENGTH = 50
 
 # This order is the label feature order used by main.ipynb's DAIR-AI dataset.
@@ -53,6 +54,7 @@ def create_app(
     """Create the API app, loading the saved artifacts once when not injected."""
     app = Flask(__name__)
     app.json.sort_keys = False
+    app.config["MAX_CONTENT_LENGTH"] = MAX_REQUEST_BYTES
     CORS(
         app,
         resources={r"/api/*": {"origins": os.getenv("FRONTEND_ORIGIN", "http://localhost:5173")}},
@@ -69,6 +71,10 @@ def create_app(
 
     app.config["EMOTION_MODEL"] = model
     app.config["EMOTION_TOKENIZER"] = tokenizer
+
+    @app.errorhandler(413)
+    def request_too_large(_: Any) -> tuple[Any, int]:
+        return jsonify({"error": "Request body is too large."}), 413
 
     @app.get("/api/health")
     def health() -> tuple[Any, int]:

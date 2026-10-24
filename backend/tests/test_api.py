@@ -126,6 +126,16 @@ def test_rejects_non_json_content_type(client) -> None:
     assert response.status_code == 415
 
 
+def test_rejects_oversized_request_body(client) -> None:
+    response = client.post(
+        "/api/predict",
+        data=b"{" + b" " * (16 * 1024),
+        content_type="application/json",
+    )
+    assert response.status_code == 413
+    assert response.json == {"error": "Request body is too large."}
+
+
 def test_unavailable_model_returns_safe_error() -> None:
     app = create_app(StubModel(), StubTokenizer())
     app.config.update(TESTING=True, EMOTION_MODEL=None, EMOTION_TOKENIZER=None)
