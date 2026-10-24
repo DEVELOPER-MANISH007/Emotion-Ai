@@ -116,7 +116,7 @@ vercel link
 vercel --prod
 ```
 
-Vercel's Python function bundle limit is 500 MB on the standard path. TensorFlow may need the Large Functions allowance; new projects are automatically enrolled in the current beta, while existing projects can set `VERCEL_SUPPORT_LARGE_FUNCTIONS=1` in project environment variables. The model file is about 41.5 MB. Verify `/api/health` and a real `/api/predict` call after deployment.
+Vercel's Python function bundle limit is 500 MB on the standard path. This TensorFlow function bundles to about 1.85 GB, so the Vercel project sets `VERCEL_SUPPORT_LARGE_FUNCTIONS=1` for production and preview deployments. The model file is about 41.5 MB. Verify `/api/health` and a real `/api/predict` call after deployment.
 
 ## Privacy and behavior
 
