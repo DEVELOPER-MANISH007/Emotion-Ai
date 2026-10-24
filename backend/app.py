@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from werkzeug.exceptions import BadRequest
 from tensorflow.keras.models import load_model
@@ -71,6 +71,19 @@ def create_app(
 
     app.config["EMOTION_MODEL"] = model
     app.config["EMOTION_TOKENIZER"] = tokenizer
+
+    @app.get("/")
+    def frontend() -> Any:
+        """Serve the Vite entrypoint generated into the root public directory."""
+        index_path = BASE_DIR / "public" / "index.html"
+        if not index_path.is_file():
+            return jsonify({"error": "The frontend build is unavailable."}), 404
+        return send_from_directory(index_path.parent, index_path.name)
+
+    @app.get("/assets/<path:asset_path>")
+    def frontend_assets(asset_path: str) -> Any:
+        """Serve the built frontend assets from Vercel's included public files."""
+        return send_from_directory(BASE_DIR / "public" / "assets", asset_path)
 
     @app.errorhandler(413)
     def request_too_large(_: Any) -> tuple[Any, int]:
