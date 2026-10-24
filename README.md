@@ -105,7 +105,7 @@ The API tests cover input validation, request size, class order, single-call inf
 
 ## Deploy to Vercel
 
-The root `vercel.json` builds the Vite frontend into `public/` and exposes the existing Flask app from `app.py`. The frontend uses same-origin `/api` requests, so no production API URL or CORS setting is needed. Python dependencies are pinned in `backend\requirements.txt`; the deployment runs Python 3.12 and includes the saved model and tokenizer.
+The root `vercel.json` builds the Vite frontend into `public/` and exposes the existing Flask app from `app.py`. Vercel's default install step reads the root `requirements.txt` for the Python function; the build command installs the frontend packages and runs Vite. The frontend uses same-origin `/api` requests, so no production API URL or CORS setting is needed. Python dependencies are pinned in `backend\requirements.txt`; the deployment runs Python 3.12 and includes the saved model and tokenizer.
 
 After linking the repository to a Vercel project, deploy from the repository root:
 
