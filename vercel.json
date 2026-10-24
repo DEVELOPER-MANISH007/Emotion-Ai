@@ -1,8 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "flask",
-  "installCommand": "npm ci --prefix frontend && uv pip install --python .vercel/python/.venv/bin/python -r requirements.txt",
-  "buildCommand": "npm run build --prefix frontend",
+  "buildCommand": "npm ci --prefix frontend && npm run build --prefix frontend",
   "functions": {
     "app.py": {
       "excludeFiles": "{Given_code/**,backend/tests/**,backend/.venv/**,frontend/**,main.ipynb,**/__pycache__/**,**/*.pyc,.pytest_cache/**}"
